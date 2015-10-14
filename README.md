@@ -6,7 +6,8 @@ See details from original fork [blog](http://blog.abarbanell.de/raspberry/2015/0
 
 script mon.py: to capture system related data like cpu usage, disk usage, and cpu temperature. The first ones work on any Linux like system, the CPU temperature only on a Raspberry Pi.
 
-### Setup : NOTE *** This will install under /opt/rpimonitor and install the systemd unit
+### Setup
+NOTE *** This will install under /opt/rpimonitor and install the systemd unit
 ```
 git clone https://github.com/potgieterdl/rpym
 cd rpym
