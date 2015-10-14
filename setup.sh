@@ -14,12 +14,11 @@ else
 	exit 1
 fi
 
-
-#sudo apt-get -y install python-pip python-dev
-#sudo pip install statsd
-#sudo pip install psutil
-#sudo pip install requests
-#sudo pip install apscheduler
+sudo apt-get -y install python-pip python-dev
+sudo pip install statsd
+sudo pip install psutil
+sudo pip install requests
+sudo pip install apscheduler
 
 if [ -f rpimonitor.service ]
 then
