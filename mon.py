@@ -11,36 +11,60 @@
 # 192.160.100.100 statsd
 #
 
-
+from datetime import datetime
 import statsd
 import os
 import psutil
+import time
+import apscheduler
+import logging
 
-# get data 
-host = os.uname()[1]
-rasp = ('armv' in os.uname()[4])
+logging.basicConfig()
 
-cpu = psutil.cpu_percent(interval=1)
-if rasp:
-    f = open('/sys/class/thermal/thermal_zone0/temp', 'r')
-    l = f.readline()
-    temp = 1.0 * float(l)/1000
-usage = psutil.disk_usage("/")
-mem = psutil.virtual_memory()
- 
+from apscheduler.schedulers.blocking import BlockingScheduler
 
-# send data
-c = statsd.StatsClient('statsd', 8125, prefix=host)
+started = False
 
-c.incr('heartbeat')
-c.gauge('cpu.percent', cpu)
+def tick():
+    global started
+    if started is False:
+        print('Started successfuly : %s' % datetime.now()) 
+        started = True
 
-if rasp:
-    c.gauge('cpu.temp', temp)
+    # get data
+    host = os.uname()[1]
+    rasp = ('armv' in os.uname()[4])
+    
+    cpu = psutil.cpu_percent(interval=1)
+    if rasp:
+        f = open('/sys/class/thermal/thermal_zone0/temp', 'r')
+        l = f.readline()
+        temp = 1.0 * float(l)/1000
+    usage = psutil.disk_usage("/")
+    mem = psutil.virtual_memory()
 
-c.gauge('disk.root.total', usage.total)
-c.gauge('disk.root.used', usage.used)
-c.gauge('disk.root.free', usage.free)
-c.gauge('disk.root.percent', usage.percent)
-c.gauge('mem.percent', mem.percent) 
+    # send data
+    c = statsd.StatsClient('statsd', 8125, prefix=host)
+
+    c.incr('heartbeat')
+    c.gauge('cpu.percent', cpu)
+
+    if rasp:
+        c.gauge('cpu.temp', temp)
+
+    c.gauge('disk.root.total', usage.total)
+    c.gauge('disk.root.used', usage.used)
+    c.gauge('disk.root.free', usage.free)
+    c.gauge('disk.root.percent', usage.percent)
+    c.gauge('mem.percent', mem.percent)
+    
+if __name__ == '__main__':
+    print('Starting statsd agent : %s' % datetime.now())
+    scheduler = BlockingScheduler()
+    scheduler.add_job(tick, 'interval', seconds=3)
+
+    try:
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        pass
 

@@ -1,0 +1,15 @@
+[Unit]
+Description=Raspberry PI stats monitor
+After=syslog.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/rpimonitor/
+ExecStart=/opt/rpimonitor/mon.py
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
