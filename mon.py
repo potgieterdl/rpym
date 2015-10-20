@@ -56,7 +56,10 @@ def tick():
     c.gauge('disk.root.used', usage.used)
     c.gauge('disk.root.free', usage.free)
     c.gauge('disk.root.percent', usage.percent)
-    c.gauge('mem.percent', mem.percent)
+    c.gauge('mem.total', mem.total)
+    c.gauge('mem.free', mem.free)
+    c.gauge('mem.used', mem.used)
+    c.gauge('mem.percent', (mem.used/float(mem.total)*100))
     
 if __name__ == '__main__':
     print('Starting statsd agent : %s' % datetime.now())
